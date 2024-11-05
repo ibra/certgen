@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import sys
 
-def generate_certificates(csv_path, font_path, output_folder, y_position=720):
+def generate_certificates(csv_path, font_path, output_folder, y_position, font_size):
     try:
         delegate_data = pd.read_csv(csv_path)
         if "Name" not in delegate_data.columns:
@@ -16,10 +16,10 @@ def generate_certificates(csv_path, font_path, output_folder, y_position=720):
     os.makedirs(output_folder, exist_ok=True)
 
     try:
-        font = ImageFont.truetype(font_path, 48)
+        font = ImageFont.truetype(font_path, font_size)
     except IOError:
         print(f"Font '{font_path}' not found. Using default font.")
-        font = ImageFont.load_default()
+        font = ImageFont.load_default(font_size)
 
     for _, row in delegate_data.iterrows():
         delegate_name = row["Name"]
@@ -64,13 +64,19 @@ if __name__ == "__main__":
     csv_path = "names.csv"
     font_path = "poppins.ttf"
     output_folder = "certificates/"
+    font_size = 48
+    y_position = 720
     
     # optional command line args
     if len(sys.argv) > 1:
         csv_path = sys.argv[1]
     if len(sys.argv) > 2:
-        font_path = sys.argv[2]
+        output_folder = sys.argv[2]
     if len(sys.argv) > 3:
-        output_folder = sys.argv[3]
+        y_position = sys.argv[3]
+    if len(sys.argv) > 4:
+        font_size = int(sys.argv[4])
+    if len(sys.argv) > 5:
+        font_path = sys.argv[5]
 
-    generate_certificates(csv_path, font_path, output_folder)
+    generate_certificates(csv_path, font_path, output_folder, y_position, font_size)
